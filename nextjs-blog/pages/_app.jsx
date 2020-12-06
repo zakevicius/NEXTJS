@@ -1,5 +1,6 @@
 import '../styles/global.css';
+import { appWithTranslation } from '../i18n';
 
-export default function App({ Component, pageProps }) {
-  return <Component {...pageProps} />;
-}
+const App = ({ Component, pageProps }) => <Component {...pageProps} />;
+
+export default appWithTranslation(App);

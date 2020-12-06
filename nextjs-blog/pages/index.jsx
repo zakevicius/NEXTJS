@@ -1,19 +1,42 @@
+import { useEffect } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 
 import Layout, { siteTitle } from '../components/layout';
 import Date from '../components/date';
 
+import { i18n, withTranslation } from '../i18n';
 import { getSortedPostsData } from '../lib/posts';
 
 import utilStyles from '../components/utils.module.css';
 
-const Home = ({ allPostsData }) => {
+const Home = ({ allPostsData, t, preview }) => {
+  useEffect(() => {
+    {
+      console.log(preview);
+    }
+  }, [preview]);
+  const handleClick = () => {
+    i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
+  };
+
   return (
     <Layout home>
       <Head>
         <title>{siteTitle}</title>
       </Head>
+      <h1>{t(`${preview ? 'index-preview:' : ''}index/title.content`)}</h1>
+      <button onClick={handleClick}>
+        {i18n.language === 'en' ? 'Espanol' : 'English'}
+      </button>
+      <br />
+      <Link
+        href={
+          preview ? '/api/preview?disable=true&slug=/' : '/api/preview?slug=/'
+        }
+      >
+        <a>{preview ? 'Disable' : 'Enable'} preview mode</a>
+      </Link>
       <section className={utilStyles.headingMd}>
         <p>This is my self introduction</p>
         <p>
@@ -44,14 +67,15 @@ const Home = ({ allPostsData }) => {
   );
 };
 
-export const getStaticProps = async () => {
+export const getStaticProps = async ({ preview }) => {
   const allPostsData = getSortedPostsData();
 
   return {
     props: {
       allPostsData,
+      preview: preview || false,
     },
   };
 };
 
-export default Home;
+export default withTranslation(['index', 'index-preview'])(Home);
