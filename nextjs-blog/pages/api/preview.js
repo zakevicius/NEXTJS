@@ -1,5 +1,5 @@
 export default async (req, res) => {
-  console.log(req.query);
+  console.log(req.locale);
   if (req.query.disable) {
     res.clearPreviewData();
   } else {

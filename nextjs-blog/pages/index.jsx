@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import Head from 'next/head';
 import Link from 'next/link';
 
@@ -34,6 +35,7 @@ const Home = ({ allPostsData, t, preview }) => {
         href={
           preview ? '/api/preview?disable=true&slug=/' : '/api/preview?slug=/'
         }
+        locale={i18n.language === 'en' ? 'es' : 'en'}
       >
         <a>{preview ? 'Disable' : 'Enable'} preview mode</a>
       </Link>
@@ -67,8 +69,55 @@ const Home = ({ allPostsData, t, preview }) => {
   );
 };
 
-export const getStaticProps = async ({ preview }) => {
+export const getStaticProps = async (context) => {
+  const { preview } = context;
   const allPostsData = getSortedPostsData();
+  const fs = require('fs');
+
+  console.log(context);
+
+  const dataEN = {
+    'index/title': {
+      content: 'This is title',
+    },
+  };
+
+  const dataENpreview = {
+    'index/title': {
+      content: '_This is preview Title',
+    },
+  };
+
+  const dataES = {
+    'index/title': {
+      content: 'Este es el titulo',
+    },
+  };
+
+  const dataESpreview = {
+    'index/title': {
+      content: '_Este es el título de vista previa',
+    },
+  };
+
+  const locale = preview ? 'es' : 'en';
+
+  let data;
+  if (preview) {
+    data = locale === 'en' ? dataENpreview : dataESpreview;
+  } else {
+    data = locale === 'en' ? dataEN : dataES;
+  }
+
+  const fileName = preview ? 'index-preview.json' : 'index.json';
+
+  await fs.writeFile(
+    `public/static/locales/${locale}/${fileName}`,
+    JSON.stringify(data),
+    () => {
+      console.log(data);
+    }
+  );
 
   return {
     props: {
