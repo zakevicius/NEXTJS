@@ -1,6 +1,11 @@
+import App from 'next/app';
 import '../styles/global.css';
 import { appWithTranslation } from '../i18n';
 
-const App = ({ Component, pageProps }) => <Component {...pageProps} />;
+const MyApp = ({ Component, pageProps }) => <Component {...pageProps} />;
+
+MyApp.getInitialProps = async (appContext) => ({
+  ...(await App.getInitialProps(appContext))
+});
 
 export default appWithTranslation(App);
