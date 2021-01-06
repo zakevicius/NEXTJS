@@ -29,3 +29,9 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+
+# translations
+public/static/locales/en/*
+public/static/locales/es/*
+!public/static/locales/en/common.json
+!public/static/locales/es/common.json

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import Axios from 'axios'
 
 import Head from 'next/head';
 import Link from 'next/link';
@@ -7,24 +8,21 @@ import Layout, { siteTitle } from '../components/layout';
 import Date from '../components/date';
 
 import { i18n, useTranslation } from '../i18n';
-// import { getSortedPostsData } from '../lib/posts';
+import { getSortedPostsData } from '../lib/posts';
 
 import utilStyles from '../components/utils.module.css';
 
 const Home = ({ allPostsData, preview }) => {
   const { t } = useTranslation();
 
-  useEffect(async () => {
+  useEffect(() => {
     {
-      const res = await fetch('api/json');
-      const json = await res.json();
-
-      // console.log(json);
+      console.log('effect')
     }
-  }),
-    [];
+  },[preview]);
 
   const handleClick = () => {
+    console.log(i18n.language)
     i18n.changeLanguage(i18n.language === 'en' ? 'es' : 'en');
   };
 
@@ -84,77 +82,61 @@ const Home = ({ allPostsData, preview }) => {
   );
 };
 
-Home.getInitialProps = async (context) => {
-  // console.log(context);
-  // const allPostsData = getSortedPostsData();
-
-  return {
-    // allPostsData,
-    namespacesRequired: ['index']
-  };
-};
-
-// export const getStaticProps = async (context) => {
-//   const { preview, locale } = context;
-//   const allPostsData = getSortedPostsData();
-//   const fs = require('fs');
-
-//   console.log(context);
-
-//   const dataEN = {
-//     'index/title': {
-//       content: 'This is title'
-//     }
-//   };
-
-//   const dataENpreview = {
-//     'index/title': {
-//       content: '_This is preview Title'
-//     }
-//   };
-
-//   // const dataES = {
-//   //   'index/title': {
-//   //     content: 'Este es el titulo'
-//   //   }
-//   // };
-
-//   const dataES = {
-//     'index/random': {
-//       content: 'to jeste randomo'
-//     }
-//   };
-
-//   const dataESpreview = {
-//     'index/title': {
-//       content: '_Este es el título de vista previa'
-//     }
-//   };
-
-//   let data;
-//   if (preview) {
-//     data = locale === 'en' ? dataENpreview : dataESpreview;
-//   } else {
-//     data = locale === 'en' ? dataEN : dataES;
-//   }
-
-//   const fileName = preview ? 'index-preview.json' : 'index.json';
-
-//   await fs.writeFile(
-//     `public/static/locales/${locale}/${fileName}`,
-//     JSON.stringify(data),
-//     () => {
-//       console.log(data);
-//     }
-//   );
+// Home.getInitialProps = async (context) => {
+//   // console.log(context);
+//   // const allPostsData = getSortedPostsData();
 
 //   return {
-//     props: {
-//       allPostsData,
-//       preview: preview || false
-//     },
-//     revalidate: 1
+//     // allPostsData,
+//     namespacesRequired: ['index']
 //   };
 // };
+
+export const getStaticProps = async (context) => {
+  const { preview, locale } = context;
+  const allPostsData = getSortedPostsData();
+  const fs = require('fs');
+  const { join } = require('path')
+
+  const { data } = await Axios.get(`${process.env.API}${context.preview ? '?preview=true' : ''}`)
+
+  const path =
+    process.env.NODE_ENV == 'development' ? './public/static/locales' : './.next/static/locales'
+  
+
+  const fileNameSuffix = context.preview ? '-preview' : ''
+
+    for await (const lang of Object.keys(data)) {
+      const langData = data[lang]
+      for await (const group of Object.keys(langData)) {
+        const fileName = `${group}${fileNameSuffix}.json`
+
+        await fs.promises.mkdir(`${path}/en`, { recursive: true })
+
+        await fs.promises.mkdir(`${path}/es`, { recursive: true })
+
+        await fs.promises.writeFile(
+          `${join(path, lang.toLowerCase(), fileName)}`,
+          JSON.stringify(langData[group]),
+          (err) => {
+            console.log('building:', fileName)
+            if (err) {
+              errors.push(err)
+              console.error(err)
+              sentry.captureException(err)
+            }
+          }
+        )
+      }
+    }
+
+  return {
+    props: {
+      allPostsData,
+      preview: preview || false
+    },
+    revalidate: 1
+  };
+};
 
 export default Home;
