@@ -103,7 +103,7 @@ export const getStaticProps = async (context) => {
   const { data } = await Axios.get('https://node-api-translate.herokuapp.com/translations')
 
   const path =
-    process.env.NODE_ENV == 'development' ? './public/static/locales' : './public/static/locales'
+    process.env.NODE_ENV == 'development' ? './public/static/locales' : './serverless/static/locales'
   
 
   // const fileNameSuffix = context.preview ? '-preview' : ''
