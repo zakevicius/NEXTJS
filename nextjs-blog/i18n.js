@@ -6,7 +6,7 @@ module.exports = new NextI18Next({
   defaultLanguage: "en",
   otherLanguages: ["es"],
   fallbackLng: "en",
-  localeSubpaths,
+  // localeSubpaths,
   browserLanguageDetection: true,
   localePath: path.resolve("./public/static/locales"),
 });

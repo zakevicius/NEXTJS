@@ -8,8 +8,8 @@ module.exports = {
     defaultLocale: "en",
     localeDetection: false,
   },
-  rewrites: async () => nextI18NextRewrites(localeSubpaths),
-  publicRuntimeConfig: {
-    localeSubpaths,
-  },
+  // rewrites: async () => nextI18NextRewrites(localeSubpaths),
+  // publicRuntimeConfig: {
+  //   localeSubpaths,
+  // },
 };
