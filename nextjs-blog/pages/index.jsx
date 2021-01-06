@@ -101,36 +101,36 @@ export const getStaticProps = async (context) => {
   const { data } = await Axios.get('https://node-api-translate.herokuapp.com/translations')
 
   const path =
-    process.env.NODE_ENV == 'development' ? './public/static/locales' : './.next/static/locales'
+    process.env.NODE_ENV == 'development' ? './public/static/locales' : './public/static/locales'
   
 
   // const fileNameSuffix = context.preview ? '-preview' : ''
 
   const fileNameSuffix = ''
 
-    for await (const lang of Object.keys(data)) {
-      const langData = data[lang]
-      for await (const group of Object.keys(langData)) {
-        const fileName = `${group}${fileNameSuffix}.json`
+  for await (const lang of Object.keys(data)) {
+    const langData = data[lang]
+    for await (const group of Object.keys(langData)) {
+      const fileName = `${group}${fileNameSuffix}.json`
 
-        await fs.promises.mkdir(`${path}/en`, { recursive: true })
+      await fs.promises.mkdir(`${path}/en`, { recursive: true })
 
-        await fs.promises.mkdir(`${path}/es`, { recursive: true })
+      await fs.promises.mkdir(`${path}/es`, { recursive: true })
 
-        await fs.promises.writeFile(
-          `${join(path, lang.toLowerCase(), fileName)}`,
-          JSON.stringify(langData[group]),
-          (err) => {
-            console.log('building:', fileName)
-            if (err) {
-              errors.push(err)
-              console.error(err)
-              sentry.captureException(err)
-            }
+      await fs.promises.writeFile(
+        `${join(path, lang.toLowerCase(), fileName)}`,
+        JSON.stringify(langData[group]),
+        (err) => {
+          console.log('building:', fileName)
+          if (err) {
+            errors.push(err)
+            console.error(err)
+            sentry.captureException(err)
           }
-        )
-      }
+        }
+      )
     }
+  }
 
   return {
     props: {
