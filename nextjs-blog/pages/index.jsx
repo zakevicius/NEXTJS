@@ -32,7 +32,8 @@ const Home = ({ allPostsData, preview }) => {
         <title>{siteTitle}</title>
       </Head>
       <h1>
-        {t(`${preview ? 'index-preview:' : 'index:'}index/title.content`)}
+        {t('common/button_dashboard')}
+        {/* {t(`${preview ? 'index-preview:' : 'index:'}index/title.content`)} */}
       </h1>
       <button onClick={handleClick}>
         {i18n.language === 'en' ? 'Espanol' : 'English'}
@@ -41,6 +42,7 @@ const Home = ({ allPostsData, preview }) => {
       <Link href='/' locale={i18n.language === 'en' ? 'es' : 'en'}>
         <a>change locale</a>
       </Link>
+      {t('common/section_partnership_title')}
       <br />
       <Link
         href={
