@@ -71,6 +71,19 @@ const Home = ({ preview, t }) => {
 export const getStaticProps = async ({ preview, locale }) => {
   const fs = require('fs');
   const { join } = require('path');
+  const AWS = require('@aws-sdk/client-s3');
+
+  // Create S3 service object
+  let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
+
+  // Call S3 to list the buckets
+  s3.listBuckets(function (err, data) {
+    if (err) {
+      console.log('Error', err);
+    } else {
+      console.log('Success', data.Buckets);
+    }
+  });
 
   const { data } = await Axios.get(
     'https://node-api-translate.herokuapp.com/translations'
