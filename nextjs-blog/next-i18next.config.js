@@ -17,8 +17,8 @@ const path = require("path");
 module.exports = {
   ...i18n,
   localePath: path.resolve("./public/static/locales"),
-  backend: {
-    loadPath:
-      "https://test-m-photo.s3.eu-north-1.amazonaws.com/locales/{{lng}}/{{ns}}.json",
-  },
+  // backend: {
+  //   loadPath:
+  //     "https://test-m-photo.s3.eu-north-1.amazonaws.com/locales/{{lng}}/{{ns}}.json",
+  // },
 };
