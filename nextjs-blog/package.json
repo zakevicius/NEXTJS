@@ -8,9 +8,11 @@
     "start": "next start -p 3001"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1.0",
     "axios": "^0.21.1",
     "date-fns": "^2.16.1",
     "gray-matter": "^4.0.2",
+    "i18next": "^19.8.4",
     "i18next-http-backend": "^1.0.21",
     "next": "^10",
     "next-i18next": "^8.0.0-beta.0",
