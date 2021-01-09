@@ -36,9 +36,12 @@ const Home = ({ preview, t }) => {
         {i18n.language === 'en' ? 'Espanol' : 'English'}
       </button> */}
       <br />
-      {/* <Link href='/' locale={i18n.language === 'en' ? 'es' : 'en'}>
+      <Link
+        href='/'
+        locale={router.locale === 'en' ? 'es' : 'en'}
+      >
         <a>change locale</a>
-      </Link> */}
+      </Link>
       <br />
       <h3>{t('common/section_partnership_title')}</h3>
       <br />
@@ -71,19 +74,35 @@ const Home = ({ preview, t }) => {
 export const getStaticProps = async ({ preview, locale }) => {
   const fs = require('fs');
   const { join } = require('path');
-  const AWS = require('@aws-sdk/client-s3');
+  const { S3 } = require('@aws-sdk/client-s3');
 
   // Create S3 service object
-  let s3 = new AWS.S3({ apiVersion: '2006-03-01' });
-
-  // Call S3 to list the buckets
-  s3.listBuckets(function (err, data) {
-    if (err) {
-      console.log('Error', err);
-    } else {
-      console.log('Success', data.Buckets);
-    }
+  const s3 = new S3({
+    credentials: {
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY
+    },
+    region: 'eu-north-1'
   });
+
+
+  const translationData = await s3.getObject({
+    Bucket: process.env.S3_BUCKET,
+    Key: 'locales/en/common.json'
+  })
+ 
+  const readData = new Promise(function(resolve, reject) {
+    translationData.Body.on('data', (d) => {
+      buff += d.toString()
+    })
+    translationData.Body.on('end', () => resolve(JSON.parse(buff)));
+  });
+
+  let translations = await readData
+
+
+  console.log('------------------------------------------------------')
+  console.log(translations)
 
   const { data } = await Axios.get(
     'https://node-api-translate.herokuapp.com/translations'
@@ -93,6 +112,16 @@ export const getStaticProps = async ({ preview, locale }) => {
     process.env.NODE_ENV == 'development'
       ? './public/static/locales'
       : './public/static/locales';
+
+
+  // Upload data to S3
+  await s3.putObject({
+    Bucket: process.env.S3_BUCKET,
+    Key: 'locales/en/common.json',
+    Body: JSON.stringify(data, null, '\t'),
+  }, (err, data) => {
+    if (err) console.log(err)
+  })
 
   // const fileNameSuffix = context.preview ? '-preview' : '';
 
@@ -117,8 +146,6 @@ export const getStaticProps = async ({ preview, locale }) => {
       );
     }
   }
-
-  console.log(locale);
 
   return {
     props: {
