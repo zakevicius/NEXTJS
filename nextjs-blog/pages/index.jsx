@@ -90,16 +90,17 @@ export const getStaticProps = async ({ preview, locale }) => {
     Bucket: process.env.S3_BUCKET,
     Key: 'locales/en/common.json'
   })
+
+  let chunks = ''
  
   const readData = new Promise(function(resolve, reject) {
     translationData.Body.on('data', (d) => {
-      buff += d.toString()
+      chunks += d.toString()
     })
-    translationData.Body.on('end', () => resolve(JSON.parse(buff)));
+    translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
   });
 
   let translations = await readData
-
 
   console.log('------------------------------------------------------')
   console.log(translations)
