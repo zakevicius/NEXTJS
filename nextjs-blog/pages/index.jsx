@@ -36,10 +36,7 @@ const Home = ({ preview, t }) => {
         {i18n.language === 'en' ? 'Espanol' : 'English'}
       </button> */}
       <br />
-      <Link
-        href='/'
-        locale={router.locale === 'en' ? 'es' : 'en'}
-      >
+      <Link href='/' locale={router.locale === 'en' ? 'es' : 'en'}>
         <a>change locale</a>
       </Link>
       <br />
@@ -74,34 +71,37 @@ const Home = ({ preview, t }) => {
 export const getStaticProps = async ({ preview, locale }) => {
   const fs = require('fs');
   const { join } = require('path');
-  const aws = require('@aws-sdk/client-s3');
+  const { S3 } = require('@aws-sdk/client-s3');
 
-  // Create S3 service object
-  const s3 = new aws.S3({
-    accessKeyId: process.env.S3_ACCESS_KEY,
-    secretAccessKey: process.env.S3_SECRET_KEY,
-    region: 'eu-north-1',
-  });
+  try {
+    // Create S3 service object
+    const s3 = new S3({
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY,
+      region: 'eu-north-1',
+    });
 
+    const translationData = await s3.getObject({
+      Bucket: process.env.S3_BUCKET,
+      Key: 'locales/en/common.json',
+    });
 
-  const translationData = await s3.getObject({
-    Bucket: process.env.S3_BUCKET,
-    Key: 'locales/en/common.json'
-  })
+    let chunks = '';
 
-  let chunks = ''
- 
-  const readData = new Promise(function(resolve, reject) {
-    translationData.Body.on('data', (d) => {
-      chunks += d.toString()
-    })
-    translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
-  });
+    const readData = new Promise(function (resolve, reject) {
+      translationData.Body.on('data', (d) => {
+        chunks += d.toString();
+      });
+      translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
+    });
 
-  let translations = await readData
-
-  console.log('------------------------------------------------------')
-  console.log(translations)
+    let translations = await readData;
+    console.log('------------------------------------------------------');
+    console.log(translations);
+  } catch (err) {
+    console.log('Error receiving');
+    console.log(err);
+  }
 
   const { data } = await Axios.get(
     'https://node-api-translate.herokuapp.com/translations'
@@ -112,15 +112,22 @@ export const getStaticProps = async ({ preview, locale }) => {
       ? './public/static/locales'
       : './public/static/locales';
 
-
-  // Upload data to S3
-  await s3.putObject({
-    Bucket: process.env.S3_BUCKET,
-    Key: 'locales/en/common.json',
-    Body: JSON.stringify(data, null, '\t'),
-  }, (err, data) => {
-    if (err) console.log(err)
-  })
+  try {
+    // Upload data to S3
+    await s3.putObject(
+      {
+        Bucket: process.env.S3_BUCKET,
+        Key: 'locales/en/common.json',
+        Body: JSON.stringify(data, null, '\t'),
+      },
+      (err, data) => {
+        if (err) console.log(err);
+      }
+    );
+  } catch (err) {
+    console.log('Error uploading');
+    console.log(err);
+  }
 
   // const fileNameSuffix = context.preview ? '-preview' : '';
 
