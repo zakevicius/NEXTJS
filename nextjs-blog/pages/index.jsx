@@ -74,15 +74,13 @@ const Home = ({ preview, t }) => {
 export const getStaticProps = async ({ preview, locale }) => {
   const fs = require('fs');
   const { join } = require('path');
-  const { S3 } = require('@aws-sdk/client-s3');
+  const aws = require('@aws-sdk/client-s3');
 
   // Create S3 service object
-  const s3 = new S3({
-    credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY,
-      secretAccessKey: process.env.S3_SECRET_KEY
-    },
-    region: 'eu-north-1'
+  const s3 = new aws.S3({
+    accessKeyId: process.env.S3_ACCESS_KEY,
+    secretAccessKey: process.env.S3_SECRET_KEY,
+    region: 'eu-north-1',
   });
 
 
