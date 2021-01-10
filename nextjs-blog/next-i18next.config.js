@@ -15,8 +15,6 @@ const HttpApi = require('i18next-http-backend');
 
 // module.exports = i18next.use(HttpApi).init(i18nextOptions);
 
-i18n.use(HttpApi);
-
 module.exports = {
   ...i18n,
   // localePath: path.resolve('./public/static/locales'),
