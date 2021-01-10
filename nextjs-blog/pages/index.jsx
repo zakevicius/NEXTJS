@@ -73,36 +73,30 @@ export const getStaticProps = async ({ preview, locale }) => {
   const { join } = require('path');
   const { S3 } = require('@aws-sdk/client-s3');
 
-  try {
-    // Create S3 service object
-    const s3 = new S3({
+  // Create S3 service object
+  const s3 = new S3({
+    credentials: {
       accessKeyId: process.env.S3_ACCESS_KEY,
       secretAccessKey: process.env.S3_SECRET_KEY,
-      region: 'eu-north-1',
+    },
+    region: 'eu-north-1',
+  });
+
+  const translationData = await s3.getObject({
+    Bucket: process.env.S3_BUCKET,
+    Key: 'locales/en/common.json',
+  });
+
+  let chunks = '';
+
+  const readData = new Promise(function (resolve, reject) {
+    translationData.Body.on('data', (d) => {
+      chunks += d.toString();
     });
+    translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
+  });
 
-    const translationData = await s3.getObject({
-      Bucket: process.env.S3_BUCKET,
-      Key: 'locales/en/common.json',
-    });
-
-    let chunks = '';
-
-    const readData = new Promise(function (resolve, reject) {
-      translationData.Body.on('data', (d) => {
-        chunks += d.toString();
-      });
-      translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
-    });
-
-    let translations = await readData;
-    console.log('------------------------------------------------------');
-    console.log(translations);
-  } catch (err) {
-    console.log('Error receiving');
-    console.log('this is secret key: ' + process.env.S3_SECRET_KEY);
-    console.log(err);
-  }
+  let translations = await readData;
 
   const { data } = await Axios.get(
     'https://node-api-translate.herokuapp.com/translations'
@@ -139,18 +133,35 @@ export const getStaticProps = async ({ preview, locale }) => {
     for await (const group of Object.keys(langData)) {
       const fileName = `${group}${fileNameSuffix}.json`;
 
-      await fs.promises.writeFile(
-        `${join(path, lang.toLowerCase(), fileName)}`,
-        JSON.stringify(langData[group]),
-        (err) => {
-          console.log('building:', fileName);
-          if (err) {
-            errors.push(err);
-            console.error(err);
-            sentry.captureException(err);
+      try {
+        // Upload data to S3
+        await s3.putObject(
+          {
+            Bucket: process.env.S3_BUCKET,
+            Key: `locales/${lang}/${fileName}`,
+            Body: JSON.stringify(langData[group], null, '\t'),
+          },
+          (err, data) => {
+            if (err) console.log(err);
           }
-        }
-      );
+        );
+      } catch (err) {
+        console.log(`Error uploading ${fileName}`);
+        console.log(err);
+      }
+
+      // await fs.promises.writeFile(
+      //   `${join(path, lang.toLowerCase(), fileName)}`,
+      //   JSON.stringify(langData[group]),
+      //   (err) => {
+      //     console.log('building:', fileName);
+      //     if (err) {
+      //       errors.push(err);
+      //       console.error(err);
+      //       sentry.captureException(err);
+      //     }
+      //   }
+      // );
     }
   }
 
