@@ -100,6 +100,9 @@ export const getStaticProps = async ({ preview, locale }) => {
     console.log(translations);
   } catch (err) {
     console.log('Error receiving');
+    console.log(process.env.S3_SECRET_KEY);
+    console.log(process.env.S3_ACCESS_KEY);
+    console.log(process.env.S3_BUCKET);
     console.log(err);
   }
 
