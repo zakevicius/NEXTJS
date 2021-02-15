@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
-import Axios from 'axios';
+// import Axios from 'axios';
 
-import { withTranslation } from 'next-i18next';
-import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
+// import { withTranslation } from 'next-i18next';
+// import { serverSideTranslations } from 'next-i18next/serverSideTranslations';
 import { useRouter } from 'next/router';
 
 import Head from 'next/head';
@@ -31,7 +31,7 @@ const Home = ({ preview, t }) => {
       <Head>
         <title>{siteTitle}</title>
       </Head>
-      <h1>{t('common/button_dashboard')}</h1>
+      {/* <h1>{t('common/button_dashboard')}</h1> */}
       {/* <button onClick={handleClick}>
         {i18n.language === 'en' ? 'Espanol' : 'English'}
       </button> */}
@@ -40,7 +40,7 @@ const Home = ({ preview, t }) => {
         <a>change locale</a>
       </Link>
       <br />
-      <h3>{t('common/section_partnership_title')}</h3>
+      {/* <h3>{t('common/section_partnership_title')}</h3> */}
       <br />
       <Link
         href={
@@ -68,110 +68,111 @@ const Home = ({ preview, t }) => {
   );
 };
 
-export const getStaticProps = async ({ preview, locale }) => {
-  const fs = require('fs');
-  const { join } = require('path');
-  const { S3 } = require('@aws-sdk/client-s3');
+// export const getStaticProps = async ({ preview, locale }) => {
+//   const fs = require('fs');
+//   const { join } = require('path');
+//   const { S3 } = require('@aws-sdk/client-s3');
 
-  // Create S3 service object
-  // const s3 = new S3({
-  //   credentials: {
-  //     accessKeyId: process.env.S3_ACCESS_KEY,
-  //     secretAccessKey: process.env.S3_SECRET_KEY,
-  //   },
-  //   region: 'eu-north-1',
-  // });
+//   // Create S3 service object
+//   // const s3 = new S3({
+//   //   credentials: {
+//   //     accessKeyId: process.env.S3_ACCESS_KEY,
+//   //     secretAccessKey: process.env.S3_SECRET_KEY,
+//   //   },
+//   //   region: 'eu-north-1',
+//   // });
 
-  // const translationData = await s3.getObject({
-  //   Bucket: process.env.S3_BUCKET,
-  //   Key: 'locales/en/common.json',
-  // });
+//   // const translationData = await s3.getObject({
+//   //   Bucket: process.env.S3_BUCKET,
+//   //   Key: 'locales/en/common.json',
+//   // });
 
-  // let chunks = '';
+//   // let chunks = '';
 
-  // const readData = new Promise(function (resolve, reject) {
-  //   translationData.Body.on('data', (d) => {
-  //     chunks += d.toString();
-  //   });
-  //   translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
-  // });
+//   // const readData = new Promise(function (resolve, reject) {
+//   //   translationData.Body.on('data', (d) => {
+//   //     chunks += d.toString();
+//   //   });
+//   //   translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
+//   // });
 
-  // let translations = await readData;
+//   // let translations = await readData;
 
-  const { data } = await Axios.get(
-    'https://node-api-translate.herokuapp.com/translations'
-  );
+//   const { data } = await Axios.get(
+//     'https://node-api-translate.herokuapp.com/translations'
+//   );
 
-  const path =
-    process.env.NODE_ENV == 'development'
-      ? './public/static/locales'
-      : './public/static/locales';
+//   const path =
+//     process.env.NODE_ENV == 'development'
+//       ? './public/static/locales'
+//       : './public/static/locales';
 
-  // try {
-  //   // Upload data to S3
-  //   await s3.putObject(
-  //     {
-  //       Bucket: process.env.S3_BUCKET,
-  //       Key: 'locales/en/common.json',
-  //       Body: JSON.stringify(data, null, '\t'),
-  //     },
-  //     (err, data) => {
-  //       if (err) console.log(err);
-  //     }
-  //   );
-  // } catch (err) {
-  //   console.log('Error uploading');
-  //   console.log(err);
-  // }
+//   // try {
+//   //   // Upload data to S3
+//   //   await s3.putObject(
+//   //     {
+//   //       Bucket: process.env.S3_BUCKET,
+//   //       Key: 'locales/en/common.json',
+//   //       Body: JSON.stringify(data, null, '\t'),
+//   //     },
+//   //     (err, data) => {
+//   //       if (err) console.log(err);
+//   //     }
+//   //   );
+//   // } catch (err) {
+//   //   console.log('Error uploading');
+//   //   console.log(err);
+//   // }
 
-  // const fileNameSuffix = context.preview ? '-preview' : '';
+//   // const fileNameSuffix = context.preview ? '-preview' : '';
 
-  const fileNameSuffix = '';
+//   const fileNameSuffix = '';
 
-  for await (const lang of Object.keys(data)) {
-    const langData = data[lang];
-    for await (const group of Object.keys(langData)) {
-      const fileName = `${group}${fileNameSuffix}.json`;
+//   for await (const lang of Object.keys(data)) {
+//     const langData = data[lang];
+//     for await (const group of Object.keys(langData)) {
+//       const fileName = `${group}${fileNameSuffix}.json`;
 
-      // try {
-      //   // Upload data to S3
-      //   await s3.putObject(
-      //     {
-      //       Bucket: process.env.S3_BUCKET,
-      //       Key: `locales/${lang}/${fileName}`,
-      //       Body: JSON.stringify(langData[group], null, '\t'),
-      //     },
-      //     (err, data) => {
-      //       if (err) console.log(err);
-      //     }
-      //   );
-      // } catch (err) {
-      //   console.log(`Error uploading ${fileName}`);
-      //   console.log(err);
-      // }
+//       // try {
+//       //   // Upload data to S3
+//       //   await s3.putObject(
+//       //     {
+//       //       Bucket: process.env.S3_BUCKET,
+//       //       Key: `locales/${lang}/${fileName}`,
+//       //       Body: JSON.stringify(langData[group], null, '\t'),
+//       //     },
+//       //     (err, data) => {
+//       //       if (err) console.log(err);
+//       //     }
+//       //   );
+//       // } catch (err) {
+//       //   console.log(`Error uploading ${fileName}`);
+//       //   console.log(err);
+//       // }
 
-      // await fs.promises.writeFile(
-      //   `${join(path, lang.toLowerCase(), fileName)}`,
-      //   JSON.stringify(langData[group]),
-      //   (err) => {
-      //     console.log('building:', fileName);
-      //     if (err) {
-      //       errors.push(err);
-      //       console.error(err);
-      //       sentry.captureException(err);
-      //     }
-      //   }
-      // );
-    }
-  }
+//       // await fs.promises.writeFile(
+//       //   `${join(path, lang.toLowerCase(), fileName)}`,
+//       //   JSON.stringify(langData[group]),
+//       //   (err) => {
+//       //     console.log('building:', fileName);
+//       //     if (err) {
+//       //       errors.push(err);
+//       //       console.error(err);
+//       //       sentry.captureException(err);
+//       //     }
+//       //   }
+//       // );
+//     }
+//   }
 
-  return {
-    props: {
-      preview: preview || false,
-      ...(await serverSideTranslations(locale, ['common', 'index'])),
-    },
-    revalidate: 1,
-  };
-};
+//   return {
+//     props: {
+//       preview: preview || false,
+//       ...(await serverSideTranslations(locale, ['common', 'index'])),
+//     },
+//     revalidate: 1,
+//   };
+// };
 
-export default withTranslation('common')(Home);
+// export default withTranslation('common')(Home);
+export default Home;
