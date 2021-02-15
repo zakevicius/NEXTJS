@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 import Layout from '../components/layout';
 
-const RandomPage = () => {
+const PageRandom = () => {
   
   return (
     <Layout home>
@@ -30,4 +30,4 @@ const RandomPage = () => {
   );
 };
 
-export default RandomPage;
+export default PageRandom;
