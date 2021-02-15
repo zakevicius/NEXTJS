@@ -10,7 +10,7 @@ import Link from 'next/link';
 
 import Layout, { siteTitle } from '../components/layout';
 
-import utilStyles from '../components/utils.module.css';
+import utilStyles from '../components/utils.module.css'
 
 const Home = ({ preview, t }) => {
   const router = useRouter();
