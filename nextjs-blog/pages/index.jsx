@@ -74,29 +74,29 @@ export const getStaticProps = async ({ preview, locale }) => {
   const { S3 } = require('@aws-sdk/client-s3');
 
   // Create S3 service object
-  const s3 = new S3({
-    credentials: {
-      accessKeyId: process.env.S3_ACCESS_KEY,
-      secretAccessKey: process.env.S3_SECRET_KEY,
-    },
-    region: 'eu-north-1',
-  });
+  // const s3 = new S3({
+  //   credentials: {
+  //     accessKeyId: process.env.S3_ACCESS_KEY,
+  //     secretAccessKey: process.env.S3_SECRET_KEY,
+  //   },
+  //   region: 'eu-north-1',
+  // });
 
-  const translationData = await s3.getObject({
-    Bucket: process.env.S3_BUCKET,
-    Key: 'locales/en/common.json',
-  });
+  // const translationData = await s3.getObject({
+  //   Bucket: process.env.S3_BUCKET,
+  //   Key: 'locales/en/common.json',
+  // });
 
-  let chunks = '';
+  // let chunks = '';
 
-  const readData = new Promise(function (resolve, reject) {
-    translationData.Body.on('data', (d) => {
-      chunks += d.toString();
-    });
-    translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
-  });
+  // const readData = new Promise(function (resolve, reject) {
+  //   translationData.Body.on('data', (d) => {
+  //     chunks += d.toString();
+  //   });
+  //   translationData.Body.on('end', () => resolve(JSON.parse(chunks)));
+  // });
 
-  let translations = await readData;
+  // let translations = await readData;
 
   const { data } = await Axios.get(
     'https://node-api-translate.herokuapp.com/translations'
@@ -107,22 +107,22 @@ export const getStaticProps = async ({ preview, locale }) => {
       ? './public/static/locales'
       : './public/static/locales';
 
-  try {
-    // Upload data to S3
-    await s3.putObject(
-      {
-        Bucket: process.env.S3_BUCKET,
-        Key: 'locales/en/common.json',
-        Body: JSON.stringify(data, null, '\t'),
-      },
-      (err, data) => {
-        if (err) console.log(err);
-      }
-    );
-  } catch (err) {
-    console.log('Error uploading');
-    console.log(err);
-  }
+  // try {
+  //   // Upload data to S3
+  //   await s3.putObject(
+  //     {
+  //       Bucket: process.env.S3_BUCKET,
+  //       Key: 'locales/en/common.json',
+  //       Body: JSON.stringify(data, null, '\t'),
+  //     },
+  //     (err, data) => {
+  //       if (err) console.log(err);
+  //     }
+  //   );
+  // } catch (err) {
+  //   console.log('Error uploading');
+  //   console.log(err);
+  // }
 
   // const fileNameSuffix = context.preview ? '-preview' : '';
 
@@ -133,22 +133,22 @@ export const getStaticProps = async ({ preview, locale }) => {
     for await (const group of Object.keys(langData)) {
       const fileName = `${group}${fileNameSuffix}.json`;
 
-      try {
-        // Upload data to S3
-        await s3.putObject(
-          {
-            Bucket: process.env.S3_BUCKET,
-            Key: `locales/${lang}/${fileName}`,
-            Body: JSON.stringify(langData[group], null, '\t'),
-          },
-          (err, data) => {
-            if (err) console.log(err);
-          }
-        );
-      } catch (err) {
-        console.log(`Error uploading ${fileName}`);
-        console.log(err);
-      }
+      // try {
+      //   // Upload data to S3
+      //   await s3.putObject(
+      //     {
+      //       Bucket: process.env.S3_BUCKET,
+      //       Key: `locales/${lang}/${fileName}`,
+      //       Body: JSON.stringify(langData[group], null, '\t'),
+      //     },
+      //     (err, data) => {
+      //       if (err) console.log(err);
+      //     }
+      //   );
+      // } catch (err) {
+      //   console.log(`Error uploading ${fileName}`);
+      //   console.log(err);
+      // }
 
       // await fs.promises.writeFile(
       //   `${join(path, lang.toLowerCase(), fileName)}`,
